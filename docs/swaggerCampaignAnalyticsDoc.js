@@ -260,6 +260,111 @@
  *           description: Total amount of donations for this category
  *           example: 75000
  * 
+ *     CampaignStatusCount:
+ *       type: object
+ *       required:
+ *         - status
+ *         - total
+ *       properties:
+ *         status:
+ *           type: string
+ *           enum: [active, completed, pending, cancelled, inactive]
+ *           description: The status of the campaign
+ *         total:
+ *           type: integer
+ *           description: Total number of campaigns with this status
+ *           minimum: 0
+ *       example:
+ *         status: "active"
+ *         total: 25
+ * 
+ *     TopCampaign:
+ *       type: object
+ *       required:
+ *         - _id
+ *         - title
+ *         - amount
+ *         - status
+ *         - createdAt
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: Campaign ID
+ *         title:
+ *           type: string
+ *           description: Campaign title
+ *         amount:
+ *           type: number
+ *           description: Campaign target amount
+ *         status:
+ *           type: string
+ *           description: Current status of the campaign
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Campaign creation date
+ * 
+ *     CampaignWithDonations:
+ *       type: object
+ *       required:
+ *         - _id
+ *         - title
+ *         - amount
+ *         - status
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: Campaign ID
+ *         userId:
+ *           type: string
+ *           description: ID of the campaign creator
+ *         userDetails:
+ *           type: object
+ *           properties:
+ *             name:
+ *               type: string
+ *               description: Name of the campaign creator
+ *             email:
+ *               type: string
+ *               description: Email of the campaign creator
+ *         image:
+ *           type: string
+ *           description: Campaign image URL
+ *         title:
+ *           type: string
+ *           description: Campaign title
+ *         description:
+ *           type: string
+ *           description: Campaign description
+ *         city:
+ *           type: string
+ *           description: Campaign city
+ *         amount:
+ *           type: number
+ *           description: Campaign target amount
+ *         status:
+ *           type: string
+ *           description: Current status of the campaign
+ *         startDate:
+ *           type: string
+ *           format: date-time
+ *           description: Campaign start date
+ *         endDate:
+ *           type: string
+ *           format: date-time
+ *           description: Campaign end date
+ *         totalDonations:
+ *           type: number
+ *           description: Total amount donated to the campaign
+ *         lastDonationDate:
+ *           type: string
+ *           format: date-time
+ *           description: Date of the last donation received
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Campaign creation date
+ * 
  * tags:
  *   name: Campaign Analytics
  *   description: Endpoints for retrieving campaign statistics and analytics
@@ -438,6 +543,113 @@
  *             ]
  *       500:
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ * 
+ * /api/analytics/campaign/status:
+ *   get:
+ *     summary: Get campaign distribution by status
+ *     description: Returns an array of campaign counts grouped by their status
+ *     tags: [Campaign Analytics]
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved campaign status distribution
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/CampaignStatusCount'
+ *             example: [
+ *               { status: "active", total: 25 },
+ *               { status: "completed", total: 15 },
+ *               { status: "pending", total: 8 },
+ *               { status: "cancelled", total: 3 },
+ *               { status: "inactive", total: 5 }
+ *             ]
+ *       500:
+ *         description: Server error while fetching campaign status distribution
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: "Error fetching campaign status distribution"
+ * 
+ * /api/analytics/campaign/top-campaigns:
+ *   get:
+ *     summary: Get top 5 campaigns by amount
+ *     description: Retrieves the top 5 non-deleted campaigns sorted by target amount in descending order
+ *     tags: [Campaign Analytics]
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved top campaigns
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/TopCampaign'
+ *             example: [
+ *               {
+ *                 "_id": "65f1a2b3c4d5e6f7g8h9i0j1",
+ *                 "title": "Major Education Initiative",
+ *                 "amount": 100000,
+ *                 "status": "active",
+ *                 "createdAt": "2024-03-15T10:30:00Z"
+ *               }
+ *             ]
+ *       500:
+ *         description: Server error while fetching top campaigns
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ * 
+ * /api/analytics/campaign/all-campaigns:
+ *   get:
+ *     summary: Get all campaigns with detailed information
+ *     description: |
+ *       Retrieves all non-deleted campaigns with:
+ *       - Campaign details
+ *       - Creator information
+ *       - Donation statistics
+ *       - Last donation date
+ *     tags: [Campaign Analytics]
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved all campaigns
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/CampaignWithDonations'
+ *             example: [
+ *               {
+ *                 "_id": "65f1a2b3c4d5e6f7g8h9i0j1",
+ *                 "userId": "65f1a2b3c4d5e6f7g8h9i0j2",
+ *                 "userDetails": {
+ *                   "name": "John Doe",
+ *                   "email": "john@example.com"
+ *                 },
+ *                 "title": "Education Fund",
+ *                 "description": "Supporting education initiatives",
+ *                 "city": "New York",
+ *                 "amount": 50000,
+ *                 "status": "active",
+ *                 "totalDonations": 25000,
+ *                 "lastDonationDate": "2024-03-15T10:30:00Z",
+ *                 "createdAt": "2024-03-01T08:00:00Z"
+ *               }
+ *             ]
+ *       500:
+ *         description: Server error while fetching campaigns
  *         content:
  *           application/json:
  *             schema:

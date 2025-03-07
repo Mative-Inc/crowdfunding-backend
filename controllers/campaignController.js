@@ -287,6 +287,8 @@ export const getAllCampaignsByAdmin = async (req, res) => {
                     city: 1,
                     createdAt: 1,
                     amount: 1,
+                    status: 1,
+                    
                     totalDonations: 1,
                     lastDonationDate: 1
                 }

@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import express from 'express';
-import { getCampaignByStatus, getCampaignStats, getDonationsByCategory, getDonationsRaisedOverTime } from '../controllers/campaignAnalyticsController.js';
+import { getAllCampaigns, getCampaignByStatus, getCampaignStats, getDonationsRaisedOverTime, getTopCampaigns } from '../controllers/campaignAnalyticsController.js';
 
 const campaignAnalyticsRouter = express.Router();
 
 campaignAnalyticsRouter.get('/stats', getCampaignStats);
 campaignAnalyticsRouter.get('/status', getCampaignByStatus);
 campaignAnalyticsRouter.get('/funds-raised', getDonationsRaisedOverTime);
-campaignAnalyticsRouter.get('/donations-by-category', getDonationsByCategory);
+campaignAnalyticsRouter.get('/top-campaigns', getTopCampaigns);
+campaignAnalyticsRouter.get('/all-campaigns', getAllCampaigns);
 
 export default campaignAnalyticsRouter;
