@@ -10,6 +10,7 @@ import analyticsRouter from './routes/analyticsRoute.js';
 import userAnalyticsRouter from './routes/userAnalyticsRoute.js';
 import campaignAnalyticsRouter from './routes/campaignAnalyticsRoute.js';
 import donationAnalyticsRouter from './routes/donationAnalyticsRoute.js';
+import reportAnalyticsRouter from './routes/reportAnalyticsRoute.js';
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use('/api/dashboard', analyticsRouter);
 app.use('/api/analytics/users', userAnalyticsRouter);
 app.use('/api/analytics/campaign', campaignAnalyticsRouter);
 app.use('/api/analytics/donations', donationAnalyticsRouter);
+app.use('/api/analytics/reports', reportAnalyticsRouter);
 // Setup Swagger Docs
 setupSwagger(app);
 
