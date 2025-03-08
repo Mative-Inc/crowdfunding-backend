@@ -212,9 +212,12 @@ export const getAllCampaignsByUser = async (req, res) => {
 // Get all campaigns with donations only active campaigns user can see
 export const getCampaignsWithDonations = async (req, res) => {
     try {
+        const date = new Date();
+        
+
         const campaigns = await Campaign.aggregate([
             {
-                $match: { status: "active", deleted: false } // Only include active campaigns
+                $match: { status: "active", deleted: false, startDate: { $lte: date }, endDate: { $gte: date } } // Only include active campaigns
             },
             {
                 $lookup: {

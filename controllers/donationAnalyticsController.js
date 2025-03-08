@@ -81,11 +81,20 @@ export const getDonationStats = async (req, res) => {
 export const getDonationTrends=async(req,res)=>{
     try {
 
-        const trends=await Donation.aggregate([
+        const trends = await Donation.aggregate([
             {
-                $group:{_id:"$date",totalAmount:{$sum:"$amount"}}
+                $group: {
+                    _id: {
+                        $dateToString: { format: "%Y-%m-%d", date: "$date" }
+                    },
+                    totalAmount: { $sum: "$amount" }
+                }
+            },
+            {
+                $sort: { _id: 1 } // Sort by date in descending order
             }
-        ])
+        ]);
+        
 
         res.status(200).json({
             trends
