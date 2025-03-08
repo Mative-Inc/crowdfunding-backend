@@ -49,12 +49,17 @@ export const registerAdmin = async (req, res) => {
 }
 
 export const updateUserProfile = async (req, res) => {
-    const { userId, profilePicture, name, email, password } = req.body;
+    const { id } = req.params;
+    const { profilePicture= '', name, email, role, password, confirmPassword } = req.body;
 
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(id);
         if (!user) {
             return res.status(400).json({ message: 'User not found' });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({ message: 'Passwords do not match' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -62,6 +67,7 @@ export const updateUserProfile = async (req, res) => {
         user.profilePicture = profilePicture;
         user.name = name;
         user.email = email;
+        user.role = role;
         user.password = hashedPassword;
         user.confirmPassword = hashedPassword;
 
@@ -89,7 +95,7 @@ export const loginUser = async (req, res) => {
             return res.status(400).json({ message: 'Invalid password' });
         }
 
-        const token = jwt.sign({ userId: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+        const token = jwt.sign({ userId: user._id, name: user.name, email: user.email, role: user.role, isAdmin: user.isAdmin }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
         
         res.status(200).json({ message: 'Login successful', user, token });
 
@@ -225,6 +231,30 @@ export const getUserProfile = async (req, res) => {
     }
 };
 
+
+// add user by admin
+export const addUserByAdmin = async (req, res) => {
+    const { name, email, password, confirmPassword, role } = req.body;
+
+    try {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({ message: 'Passwords do not match' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await User.create({ name, email, password: hashedPassword, confirmPassword: hashedPassword, role });
+
+        res.status(201).json({ message: 'User added successfully', user });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 
 

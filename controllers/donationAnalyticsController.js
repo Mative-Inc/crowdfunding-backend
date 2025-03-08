@@ -202,3 +202,38 @@ export const getAllTransactions=async(req,res)=>{
         });
     }
 }
+
+
+export const getDonationById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        if (!id) {
+            return res.status(400).json({ 
+                message: "Donation ID is required." 
+            });
+        }
+
+        const donation = await Donation.findById(id)
+            .populate("campaignId", "image title description amount country city address zipCode")
+            .populate("donorId", "profilePicture name email");
+
+        if (!donation) {
+            return res.status(404).json({ 
+                message: "Donation not found." 
+            });
+        }
+        
+
+        res.status(200).json({ donation });
+    } catch (error) {
+        console.error("Error fetching donation by ID:", error);
+        res.status(500).json({
+            message: "Internal server error while fetching donation by ID.",
+            error: error.message
+        });
+    }
+};
+
+
+

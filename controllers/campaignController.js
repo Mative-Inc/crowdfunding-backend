@@ -64,6 +64,8 @@ export const getCampaign = async (req, res) => {
                     city: { $first: "$city" },
                     video: { $first: "$video" },
                     media: { $first: "$media" },
+                    startDate: { $first: "$startDate" },
+                    endDate: { $first: "$endDate" },
                     createdAt: { $first: "$createdAt" },
                     status: { $first: "$status" },
                     totalDonations: {
