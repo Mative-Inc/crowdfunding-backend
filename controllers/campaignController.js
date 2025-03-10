@@ -167,11 +167,12 @@ export const deleteCampaign = async (req, res) => {
 // Get all campaigns by user
 export const getAllCampaignsByUser = async (req, res) => {
     const { userId } = req.params;
+    console.log(userId);
     try {
+        
         const campaigns = await Campaign.aggregate([
             {
-                $match: { userId: userId, deleted: false } // Only include active campaigns
-
+                $match: { userId: new mongoose.Types.ObjectId(userId), deleted: false } // Only include active campaigns
             },
             {
                 $lookup: {
@@ -192,6 +193,7 @@ export const getAllCampaignsByUser = async (req, res) => {
                     _id: 1,
                     image: 1,
                     title: 1,
+                    category: 1,
                     description: 1,
                     city: 1,
                     createdAt: 1,
